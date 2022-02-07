@@ -1,35 +1,64 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { FlatList, Platform, StyleSheet } from "react-native";
+import EachPastTransaction from "../components/EachPastTransaction";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import EditScreenInfo from "../components/EditScreenInfo";
+import Label from "../components/Label";
+import { Text, View } from "../components/Themed";
+import TotalPot from "../components/TotalPot";
+import Navigation from "../navigation";
 
-export default function ModalScreen() {
+export default function ModalScreen({ navigation, route }: any) {
+  const { data } = route.params;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/ModalScreen.tsx" />
+      <View style={{ marginTop: 10 }}>
+        <TotalPot
+          amount={data.amount}
+          amountAddresses={data.transactions.length}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Label text="address" />
 
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        <View style={{ marginLeft: "auto", flexDirection: "row" }}>
+          <Label text="Sent" />
+          <Label text="Received" />
+        </View>
+      </View>
+      <FlatList
+        data={data.transactions}
+        renderItem={({ item, index }) => (
+          <EachPastTransaction
+            key={index}
+            address={item.address}
+            received={item.received}
+            sent={item.sent}
+          />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: "row",
+    marginVertical: 20,
+    width: 300,
+  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });
